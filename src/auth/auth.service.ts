@@ -1,7 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { UserDto } from './../user/user.dto';
@@ -37,5 +41,20 @@ export class AuthService {
     const jwt = await this.jwtService.signAsync({ id: user.id });
     response.cookie('jwt', jwt, { httpOnly: true });
     return jwt;
+  }
+
+  async getUser(request: Request) {
+    try {
+      const cookie = request.cookies['jwt'];
+      const data = await this.jwtService.verifyAsync(cookie);
+      if (!data) throw new UnauthorizedException();
+
+      const user = await this.userRepository.findOneOrFail({
+        where: { id: data['id'] },
+      });
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 }
