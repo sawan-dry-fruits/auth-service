@@ -13,5 +13,5 @@ export class UserDto {
 
   @ApiProperty({ default: 'password' })
   @IsString()
-  password: string;
+  password?: string;
 }

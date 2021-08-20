@@ -18,12 +18,13 @@ export class AuthService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  async register(user: UserDto): Promise<User> {
+  async register(user: UserDto): Promise<UserDto> {
     const newUser = new User();
     newUser.password = await hashPassword(user.password);
     newUser.name = user.name;
     newUser.email = user.email;
-    return await this.userRepository.save(newUser);
+    const { password, ...result } = await this.userRepository.save(newUser);
+    return result;
   }
 
   async findOne(
@@ -52,7 +53,9 @@ export class AuthService {
       const user = await this.userRepository.findOneOrFail({
         where: { id: data['id'] },
       });
-      return user;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...result } = user;
+      return result;
     } catch (error) {
       throw new UnauthorizedException();
     }
