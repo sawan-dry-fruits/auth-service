@@ -20,6 +20,12 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
+  app.enableCors({
+    // TODO: Change when making frontend
+    origin: 'http://localhost:4000',
+    credentials: true,
+  });
+
   await app.listen(3000);
 }
 bootstrap();
