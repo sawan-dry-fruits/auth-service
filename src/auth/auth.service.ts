@@ -23,6 +23,7 @@ export class AuthService {
     newUser.password = await hashPassword(user.password);
     newUser.name = user.name;
     newUser.email = user.email;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = await this.userRepository.save(newUser);
     return result;
   }
