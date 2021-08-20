@@ -19,8 +19,17 @@ export class AuthController {
   ): Promise<string> {
     return await this.authService.findOne(user.email, user.password, response);
   }
+
   @Get('user')
   async getUser(@Req() request: Request) {
     return await this.authService.getUser(request);
+  }
+
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('jwt');
+    return {
+      message: 'success',
+    };
   }
 }
