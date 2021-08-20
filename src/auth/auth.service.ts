@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { UserDto } from './../user/user.dto';
-import { hashPassword } from './../utils/password.utils';
+import { comparePassword, hashPassword } from './../utils/password.utils';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,14 @@ export class AuthService {
     return await this.userRepository.save(newUser);
   }
 
-  async findOne(email: string): Promise<User> {
-    return await this.userRepository.findOneOrFail({ where: { email } });
+  async findOne(email: string, password: string): Promise<User> {
+    const user = await this.userRepository.findOneOrFail({ where: { email } });
+    if (!user) {
+      throw new BadRequestException('Invalid Credentials');
+    }
+    if (!comparePassword(password, user.password)) {
+      throw new BadRequestException('Invalid Credentials');
+    }
+    return user;
   }
 }

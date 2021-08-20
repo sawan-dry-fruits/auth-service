@@ -1,7 +1,6 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { UserDto } from 'src/user/user.dto';
 import { User } from 'src/user/user.entity';
-import { comparePassword } from 'src/utils/password.utils';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -15,14 +14,6 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() user: UserDto) {
-    const found = await this.authService.findOne(user.email);
-
-    if (!user) {
-      throw new BadRequestException('Invalid Credentials');
-    }
-    if (!comparePassword(user.password, found.password)) {
-      throw new BadRequestException('Invalid Credentials');
-    }
-    return found;
+    return await this.authService.findOne(user.email, user.password);
   }
 }
