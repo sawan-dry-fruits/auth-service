@@ -1,16 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString } from 'class-validator';
-
+import { Unique } from 'typeorm';
+@Unique(['email'])
 export class UserDto {
-  @ApiProperty()
+  @ApiProperty({ default: 'Piyush' })
   @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ default: 'user@email.com' })
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ default: 'password' })
   @IsString()
   password: string;
 }

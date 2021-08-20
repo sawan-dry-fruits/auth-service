@@ -16,7 +16,10 @@ export class AuthService {
     newUser.password = await hashPassword(user.password);
     newUser.name = user.name;
     newUser.email = user.email;
+    return await this.userRepository.save(newUser);
+  }
 
-    return this.userRepository.save(newUser);
+  async findOne(email: string): Promise<User> {
+    return await this.userRepository.findOneOrFail({ where: { email } });
   }
 }
