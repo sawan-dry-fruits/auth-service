@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   admin:
+    container_name: auth_service_PHP_MY_ADMIN
     image: phpmyadmin/phpmyadmin:latest
     links:
       - db:${MYSQL_HOST}
@@ -15,17 +16,18 @@ services:
       PMA_PORT: ${MYSQL_PORT}
 
   db:
-    build: ./database
-    image: mysql:5.7
-    container_name: ${MYSQL_HOST}
-    volumes:
-      - ./database/data:/var/lib/mysql
+    container_name: auth_service_DB
+    image: mysql
+    restart: always
+    env_file: ./.env
     ports:
-      - '${MYSQL_PORT}:${MYSQL_PORT}'
+      - '$MYSQL_PORT:$MYSQL_PORT'
     environment:
-      MYSQL_TCP_PORT: ${MYSQL_PORT}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DB_NAME}
+      MYSQL_TCP_PORT: $MYSQL_PORT
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DB_NAME
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_USER_PASS
 
   dev:
     container_name: auth_service
@@ -44,22 +46,22 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     restart: unless-stopped
-  prod:
-    container_name: nestjs_api_prod
-    image: auth-service:1.0.0
-    build:
-      context: .
-      target: production
-      dockerfile: ./Dockerfile
-    command: npm run start:prod
-    ports:
-      - 3000:3000
-      - 9229:9229
-    networks:
-      - nestjs-network
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+  # prod:
+  #   container_name: nestjs_api_prod
+  #   image: auth-service:1.0.0
+  #   build:
+  #     context: .
+  #     target: production
+  #     dockerfile: ./Dockerfile
+  #   command: npm run start:prod
+  #   ports:
+  #     - 3000:3000
+  #     - 9229:9229
+  #   networks:
+  #     - nestjs-network
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/src/app/node_modules
     restart: unless-stopped
 
 networks:

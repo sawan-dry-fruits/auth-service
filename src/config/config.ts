@@ -1,5 +1,5 @@
 import { User } from 'src/user/user.entity';
-
+console.log(process.env.HOST);
 export const config = () => ({
   database: {
     type: 'mysql',
