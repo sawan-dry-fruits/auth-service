@@ -1,4 +1,5 @@
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
@@ -8,6 +9,8 @@ import { AllExceptionsFilter } from './filter/all-exceptions.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
+  const configService = app.get(ConfigService);
+  const port = configService.get('PORT');
 
   const config = new DocumentBuilder()
     .setTitle('Auth Service')
@@ -28,7 +31,6 @@ async function bootstrap() {
     origin: 'http://localhost:4000',
     credentials: true,
   });
-
-  await app.listen(3000);
+  await app.listen(port);
 }
 bootstrap();
